@@ -1,0 +1,7 @@
+database:
+    name: progressboard_identity
+
+eureka:
+    client:
+        webclient:
+            enabled: true
