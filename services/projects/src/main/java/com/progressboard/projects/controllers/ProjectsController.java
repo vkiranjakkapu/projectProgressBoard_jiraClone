@@ -20,6 +20,7 @@ import com.progressboard.projects.dto.requests.UpdateProjectDto;
 import com.progressboard.projects.dto.responses.ProjectResponseDto;
 import com.progressboard.projects.services.ProjectService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -49,7 +50,8 @@ public class ProjectsController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@PostMapping("/")
-	public ResponseEntity<ApiResponseDto<ProjectResponseDto>> createProject(@RequestBody CreateProjectDto request) {
+	public ResponseEntity<ApiResponseDto<ProjectResponseDto>> createProject(
+			@Valid @RequestBody CreateProjectDto request) {
 		return ResponseEntity
 				.ok(ApiResponseDto.<ProjectResponseDto>builder()
 						.data(projectService
@@ -59,7 +61,8 @@ public class ProjectsController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("/")
-	public ResponseEntity<ApiResponseDto<ProjectResponseDto>> updateProject(@RequestBody UpdateProjectDto request) {
+	public ResponseEntity<ApiResponseDto<ProjectResponseDto>> updateProject(
+			@Valid @RequestBody UpdateProjectDto request) {
 		return ResponseEntity
 				.ok(ApiResponseDto.<ProjectResponseDto>builder()
 						.data(projectService

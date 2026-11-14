@@ -2,7 +2,8 @@ package com.progressboard.projects.models;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -23,8 +24,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,8 +47,7 @@ public class Ticket {
     private String description;
 
     @Builder.Default
-    @Max(10)
-    @Min(0)
+    @Column(columnDefinition = "integer check (story_points >= 0 and story_points <= 10)")
     private int storyPoints = 5;
 
     @Enumerated(EnumType.STRING)
@@ -64,11 +62,13 @@ public class Ticket {
     private String creatorName;
 
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<Assignee> allAssignees;
+    @Builder.Default
+    private Set<Assignee> allAssignees = new HashSet<>();
 
     @OneToMany(mappedBy = "ticket", orphanRemoval = true, cascade = { CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.REFRESH, CascadeType.REMOVE })
-    private List<Comment> comments;
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -76,10 +76,8 @@ public class Ticket {
     @CreationTimestamp
     private Instant createdAt;
 
-    public UUID getAssignedMember() {
-        return this.allAssignees.stream()
-                .sorted(Comparator.comparing(Assignee::getCreatedAt, Comparator.reverseOrder()))
-                .findFirst().map(a -> a.getMemberId()).orElse(null);
+    public Assignee getAssignedTo() {
+        return this.allAssignees.stream().filter(a -> a.isActive()).findFirst().orElse(null);
     }
 
 }

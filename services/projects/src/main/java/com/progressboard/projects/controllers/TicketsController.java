@@ -20,6 +20,7 @@ import com.progressboard.projects.dto.requests.UpdateTicketDto;
 import com.progressboard.projects.dto.responses.TicketResponseDto;
 import com.progressboard.projects.services.TicketService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -50,7 +51,7 @@ public class TicketsController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@PostMapping("/")
-	public ResponseEntity<ApiResponseDto<TicketResponseDto>> createTicket(@RequestBody CreateTicketDto request) {
+	public ResponseEntity<ApiResponseDto<TicketResponseDto>> createTicket(@Valid @RequestBody CreateTicketDto request) {
 		return ResponseEntity.ok(
 				ApiResponseDto.<TicketResponseDto>builder()
 						.data(ticketService.mapToResponse(ticketService.createTicket(request)))
@@ -59,7 +60,7 @@ public class TicketsController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@PostMapping("/assign")
-	public ResponseEntity<ApiResponseDto<TicketResponseDto>> assignTicket(@RequestBody AssignTicketDto request) {
+	public ResponseEntity<ApiResponseDto<TicketResponseDto>> assignTicket(@Valid @RequestBody AssignTicketDto request) {
 		return ResponseEntity.ok(
 				ApiResponseDto.<TicketResponseDto>builder()
 						.data(ticketService.mapToResponse(ticketService.assignTicket(request)))
@@ -68,7 +69,7 @@ public class TicketsController {
 
 	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("/")
-	public ResponseEntity<ApiResponseDto<TicketResponseDto>> updateTicket(@RequestBody UpdateTicketDto request) {
+	public ResponseEntity<ApiResponseDto<TicketResponseDto>> updateTicket(@Valid @RequestBody UpdateTicketDto request) {
 		return ResponseEntity.ok(
 				ApiResponseDto.<TicketResponseDto>builder()
 						.data(ticketService.mapToResponse(ticketService.updateTicket(request)))

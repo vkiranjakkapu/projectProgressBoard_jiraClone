@@ -1,22 +1,17 @@
 package com.progressboard.projects.services.imp;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.progressboard.projects.dto.UserResponseDto;
 import com.progressboard.projects.dto.requests.AssignTicketDto;
 import com.progressboard.projects.dto.requests.CreateTicketDto;
 import com.progressboard.projects.dto.requests.UpdateTicketDto;
-import com.progressboard.projects.dto.responses.ParticipantResponseDto;
 import com.progressboard.projects.dto.responses.TicketResponseDto;
 import com.progressboard.projects.enums.BusinessErrors;
 import com.progressboard.projects.exceptions.BusinessException;
@@ -27,7 +22,6 @@ import com.progressboard.projects.models.Project;
 import com.progressboard.projects.models.Ticket;
 import com.progressboard.projects.repositories.TicketsRepository;
 import com.progressboard.projects.services.CurrentUserService;
-import com.progressboard.projects.services.IdentityService;
 import com.progressboard.projects.services.ProjectService;
 import com.progressboard.projects.services.TicketService;
 
@@ -41,7 +35,6 @@ public class TicketServiceImp implements TicketService {
 
     private final CurrentUserService currentUser;
     private final ProjectService projectService;
-    private final IdentityService identityService;
 
     @Override
     @Transactional(readOnly = true)
@@ -93,7 +86,15 @@ public class TicketServiceImp implements TicketService {
         requiresParticipant(project, request.memberId());
 
         Ticket ticket = getTicketById(request.ticketId());
-        ticket.getAllAssignees().add(Assignee.builder().ticket(ticket).memberId(request.memberId()).build());
+
+        ticket.setAllAssignees(ticket.getAllAssignees().stream().map(a -> {
+            a.setActive(false);
+            return a;
+        }).collect(Collectors.toSet()));
+
+        Assignee assignee = Assignee.builder().ticket(ticket).memberId(request.memberId()).build();
+
+        ticket.getAllAssignees().add(assignee);
 
         return ticketsRepository.save(ticket);
 
@@ -112,22 +113,15 @@ public class TicketServiceImp implements TicketService {
                 .description(ticket.getDescription())
                 .storyPoints(ticket.getStoryPoints())
                 .project(ticket.getProject())
+                .creatorId(ticket.getCreatorId())
+                .creatorName(ticket.getCreatorName())
+                .assignedTo(ticket.getAssignedTo())
                 .allAssignees(ticket.getAllAssignees())
                 .type(ticket.getType())
                 .comments(ticket.getComments().stream().map(Comment::getId).toList())
                 .updatedAt(ticket.getUpdatedAt())
                 .createdAt(ticket.getCreatedAt())
                 .build();
-
-        Map<UUID, UserResponseDto> usersMap = identityService.getAllUsersByIds(Stream
-                .of(ticket.getCreatorId(), ticket.getAssignedMember()).filter(Objects::nonNull)
-                .collect(Collectors.toSet()));
-
-        response.setCreatedBy(new ParticipantResponseDto(usersMap.get(ticket.getCreatorId())));
-        Optional.ofNullable(ticket.getAssignedMember()).ifPresent(assignee -> {
-            UserResponseDto assignedMember = usersMap.get(assignee);
-            response.setAssignedTo(new ParticipantResponseDto(assignedMember));
-        });
 
         return response;
     }

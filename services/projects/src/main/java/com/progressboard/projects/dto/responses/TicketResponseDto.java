@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import com.progressboard.projects.enums.TicketType;
 import com.progressboard.projects.models.Assignee;
@@ -25,8 +26,9 @@ public class TicketResponseDto {
 	private String description;
 	private int storyPoints;
 	private Project project;
-	private ParticipantResponseDto createdBy;
-	private ParticipantResponseDto assignedTo;
+	private UUID creatorId;
+	private String creatorName;
+	private Assignee assignedTo;
 	private Set<Assignee> allAssignees;
 	private TicketType type;
 	private List<Long> comments;

@@ -2,6 +2,9 @@ package com.progressboard.projects.dto.requests;
 
 import java.util.UUID;
 
-public record AssignTicketDto(Long projectId, Long ticketId, UUID memberId) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record AssignTicketDto(@NotBlank Long projectId, @NotBlank Long ticketId, @NotNull UUID memberId) {
 
 }

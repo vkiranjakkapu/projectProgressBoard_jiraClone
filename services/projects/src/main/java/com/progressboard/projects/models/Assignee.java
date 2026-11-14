@@ -37,6 +37,9 @@ public class Assignee {
 
     private UUID memberId;
 
+    @Builder.Default
+    private boolean isActive = true;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
