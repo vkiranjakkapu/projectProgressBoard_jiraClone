@@ -15,43 +15,64 @@ export type SectionLayoutComponentProps = HTMLAttributes<HTMLDivElement> & {
     children: ReactNode;
     title?: string;
     description?: string;
+    greetings?: { title?: string; description?: string };
     actionButtons?: ActionButtonProps[];
     pagination?: PaginationButtonsProps;
     masterSearch?: InputComponentProps;
     contentSearch?: InputComponentProps;
     spinner?: SpinnerComponentProps;
+    customise?: string;
 };
 
 export default function SectionLayoutComponent({
     children,
     title,
     description,
+    greetings,
     actionButtons,
     pagination,
     masterSearch,
     contentSearch,
     spinner,
+    customise,
     ...props
 }: SectionLayoutComponentProps) {
     return (
         <section
             {...props}
-            className={`*:p-4 *:lg:p-5 bg-theme rounded divide-y ${props.className}`}
+            className={`*:p-4 bg-theme rounded divide-y ${customise}`}
         >
-            {(title || description || actionButtons) && (
+            {(title || description || greetings || actionButtons) && (
                 <div className="flex flex-wrap items-center justify-between sm:gap-4 md:gap-8">
-                    <div>
-                        {(title || description) && (
+                    {!greetings ? (
+                        <div>
+                            {(title || description) && (
+                                <>
+                                    <h1 className="text-xl font-semibold">
+                                        {title}
+                                    </h1>
+                                    <p className="text-sm capitalize">
+                                        {description}
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <div>
                             <>
-                                <h1 className="text-xl font-semibold">
-                                    {title}
-                                </h1>
-                                <p className="text-sm capitalize">
-                                    {description}
-                                </p>
+                                {greetings.title && (
+                                    <p className="text-sm capitalize">
+                                        {greetings.title}
+                                    </p>
+                                )}
+                                {greetings.description && (
+                                    <h4 className="text-lg font-semibold">
+                                        {greetings.description}
+                                    </h4>
+                                )}
                             </>
-                        )}
-                    </div>
+                        </div>
+                    )}
                     {masterSearch && (
                         <div className="flex-1">
                             {(() => {
@@ -121,7 +142,11 @@ export default function SectionLayoutComponent({
             {spinner && spinner.isLoading ? (
                 <SpinnerComponent {...spinner} />
             ) : (
-                children || ""
+                <div
+                    className={`p-0! *:px-4 ${props.className ?? "divide-y *:only:py-4 *:not-only:py-2"}`}
+                >
+                    {children || ""}
+                </div>
             )}
         </section>
     );

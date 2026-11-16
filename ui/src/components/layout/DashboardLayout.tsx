@@ -7,7 +7,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useState, type ReactNode } from "react";
 import ActionButton from "../ActionButtonComponent";
-import SidebarComponent, { LogoHeadComponent } from "./SidebarComponent";
+import HeaderLogoComponent from "./HeaderLogoComponent";
+import SidebarComponent from "./SidebarComponent";
 
 type DashboardLayoutProps = {
     children: ReactNode;
@@ -72,7 +73,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <SidebarComponent theme={theme} toggleTheme={toggleTheme} />
             <div className="h-full overflow-y-scroll overflow-x-clip flex-1">
                 <header className="bg-theme lg:hidden p-4 lg:p-5 flex flex-wrap justify-between items-center bg-section-theme shadow-lg">
-                    <LogoHeadComponent textClassName="pr-4" />
+                    <HeaderLogoComponent textClassName="pr-4" />
                     <div className="flex flex-wrap items-center gap-3">
                         <div className="flex items-center gap-1">
                             <ActionButton
