@@ -6,6 +6,7 @@ import {
     MoonIcon,
     SunIcon,
 } from "@heroicons/react/24/outline";
+import type { HTMLAttributes } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthContext, { RoleType } from "../../context/useAuthContext";
 import { RoutePaths } from "../../routes/RoutePaths";
@@ -41,23 +42,11 @@ export default function SidebarComponent({
 
     return (
         <aside
-            className={`bg-theme sidebar flex flex-col justify-between p-4 lg:p-5 fixed z-1000 lg:sticky bg-section-theme shadow-lg h-full min-w-68 duration-150 *:space-y-3`}
+            className={`bg-theme sidebar flex flex-col justify-between p-3 fixed z-1000 lg:sticky bg-section-theme shadow-lg h-full min-w-68 duration-150 *:space-y-3`}
         >
-            <div className="divide-y">
-                <div className="pb-4 lg:pb-5 flex items-center gap-2 font-semibold">
-                    <img
-                        src={Logo}
-                        alt="Kanban board Logo"
-                        className="size-14 shadow-lg rounded-xl"
-                    />
-                    <div className="flex flex-col justify-center">
-                        <div className="text-lg">Kanban Board</div>
-                        <span className="text-sm capitalize">
-                            Track your project
-                        </span>
-                    </div>
-                </div>
-                <nav className="flex flex-col gap-0 text-md">
+            <div>
+                <LogoHeadComponent />
+                <ul className="flex flex-col gap-0 text-md">
                     {navItems.map((item, idx) => {
                         if (item.roles) {
                             if (!item.roles.includes(profile.roles[0])) {
@@ -81,7 +70,7 @@ export default function SidebarComponent({
 
                         const Icon = item.icon;
                         return (
-                            <div
+                            <li
                                 key={idx}
                                 onClick={() => {
                                     navigate(item.uri);
@@ -90,10 +79,10 @@ export default function SidebarComponent({
                             >
                                 <Icon className="size-4" />
                                 {item.page}
-                            </div>
+                            </li>
                         );
                     })}
-                </nav>
+                </ul>
             </div>
             <div className="text-md space-y-1!">
                 <div
@@ -159,5 +148,39 @@ export default function SidebarComponent({
                 </div>
             </div>
         </aside>
+    );
+}
+
+type LogoHeadComponentProps = HTMLAttributes<HTMLDivElement> & {
+    customise?: string;
+    textClassName?: string;
+};
+
+export function LogoHeadComponent({
+    customise,
+    textClassName,
+    ...props
+}: LogoHeadComponentProps) {
+    return (
+        <div
+            {...props}
+            className={`p-1 bg-linear outline outline-current/20 shadow-lg rounded ${props.className}`}
+        >
+            <div
+                className={`flex items-center gap-2 bg-white/50 dark:bg-background-dark/50 p-1 rounded ${customise}`}
+            >
+                <img
+                    src={Logo}
+                    alt="Kanban board Logo"
+                    className="size-12 shadow-xl rounded-xl"
+                />
+                <div className={`${textClassName ?? ""}`}>
+                    <p className="text-lg font-bold font-comforta">
+                        Progress Board
+                    </p>
+                    <p className="text-sm capitalize">Track your project</p>
+                </div>
+            </div>
+        </div>
     );
 }

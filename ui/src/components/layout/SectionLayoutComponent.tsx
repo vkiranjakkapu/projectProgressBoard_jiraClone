@@ -17,7 +17,8 @@ export type SectionLayoutComponentProps = HTMLAttributes<HTMLDivElement> & {
     description?: string;
     actionButtons?: ActionButtonProps[];
     pagination?: PaginationButtonsProps;
-    search?: InputComponentProps;
+    masterSearch?: InputComponentProps;
+    contentSearch?: InputComponentProps;
     spinner?: SpinnerComponentProps;
 };
 
@@ -27,17 +28,18 @@ export default function SectionLayoutComponent({
     description,
     actionButtons,
     pagination,
-    search,
+    masterSearch,
+    contentSearch,
     spinner,
     ...props
 }: SectionLayoutComponentProps) {
     return (
         <section
             {...props}
-            className={`space-y-3 p-4 lg:p-5 bg-theme rounded divide-y *:not-last:pb-3 ${props.className}`}
+            className={`*:p-4 *:lg:p-5 bg-theme rounded divide-y ${props.className}`}
         >
             {(title || description || actionButtons) && (
-                <div className="flex flex-wrap items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between sm:gap-4 md:gap-8">
                     <div>
                         {(title || description) && (
                             <>
@@ -50,6 +52,33 @@ export default function SectionLayoutComponent({
                             </>
                         )}
                     </div>
+                    {masterSearch && (
+                        <div className="flex-1">
+                            {(() => {
+                                const { resultsLabel, ...props } = masterSearch;
+                                return (
+                                    <div className={`flex flex-col gap-2`}>
+                                        <InputComponent
+                                            {...props}
+                                            label={{
+                                                ...props.label,
+                                                iconSize:
+                                                    props.label?.iconSize ??
+                                                    "size-5",
+                                            }}
+                                            className={`py-2 px-2.5 ${props.className}`}
+                                            customise={`pl-4 ${props.customise}`}
+                                        />
+                                        {resultsLabel && (
+                                            <span className="text-sm">
+                                                {resultsLabel}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    )}
                     {actionButtons && (
                         <div className="flex items-center gap-3">
                             {actionButtons.map((btn, idx) => (
@@ -59,12 +88,14 @@ export default function SectionLayoutComponent({
                     )}
                 </div>
             )}
-            {((pagination && pagination.totalPages > 1) || search) && (
+
+            {((pagination && pagination.totalPages > 1) || contentSearch) && (
                 <div className="flex flex-wrap items-center justify-between">
                     <div className="flex-1">
-                        {search &&
+                        {contentSearch &&
                             (() => {
-                                const { resultsLabel, ...props } = search;
+                                const { resultsLabel, ...props } =
+                                    contentSearch;
                                 return (
                                     <div className="w-full md:w-3/5 flex flex-col gap-2">
                                         <InputComponent {...props} />
@@ -78,7 +109,12 @@ export default function SectionLayoutComponent({
                             })()}
                     </div>
                     <div className="flex-1">
-                        {pagination && <PaginationButtons {...pagination} />}
+                        {pagination && (
+                            <PaginationButtons
+                                {...pagination}
+                                className={`ml-auto ${pagination.className}`}
+                            />
+                        )}
                     </div>
                 </div>
             )}

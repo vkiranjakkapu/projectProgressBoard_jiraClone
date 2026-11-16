@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa&display=swap");
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -12,6 +14,8 @@
 
     --color-dark-primary: #c5c3c6;
     --color-dark-accent: #dcdcdd;
+
+    --font-comforta: "Comfortaa", sans-serif;
 }
 
 @layer base {
@@ -19,8 +23,17 @@
         @apply border-primary-accent/30 dark:border-dark-accent/30 transition-all duration-100;
     }
 
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-comforta;
+    }
+
     body {
-        @apply bg-background-light text-background-dark dark:text-white dark:bg-background-dark-secondary;
+        @apply bg-background-light text-primary-accent dark:text-white dark:bg-background-dark-secondary;
     }
 
     .notification {
@@ -52,14 +65,14 @@
     input,
     select,
     textarea {
-        @apply px-2 py-1.5 w-full rounded border bg-primary/10 dark:bg-dark-accent/16 outline-none ring-primary-accent/60 dark:ring-dark-accent focus:border-primary focus:ring-2 focus:ring-offset-0;
+        @apply px-2 py-1.5 w-full shadow-sm rounded border bg-primary/6 dark:bg-dark-accent/16 outline-none ring-primary/40 dark:ring-dark-accent focus:border-primary focus:ring-2 focus:ring-offset-0;
     }
 
     .form-group {
-        @apply px-2 py-1.5 m-1 rounded border bg-primary/10 dark:bg-dark-accent/16 flex items-center gap-1 ring-primary-accent/60 dark:ring-dark-accent/80 focus-within:border-primary focus-within:ring-2 focus-within:ring-offset-0;
+        @apply px-2 py-1.5 m-1 shadow-sm rounded border bg-primary/6 dark:bg-dark-accent/16 flex items-center gap-1 ring-primary/40 dark:ring-dark-accent/80 focus-within:border-primary focus-within:ring-2 focus-within:ring-offset-0;
 
         & :is(input, select, textarea):not(.inherit-default) {
-            @apply rounded-none ring-0 border-0 py-0 px-1 bg-transparent;
+            @apply shadow-none rounded-none ring-0 border-0 py-0 px-1 bg-transparent;
             &.light {
                 @apply bg-white;
             }
@@ -68,6 +81,15 @@
         & label {
             @apply flex items-center gap-1;
         }
+    }
+
+    .bg-linear {
+        @apply bg-[--color-background-light] bg-[linear-gradient(135deg,transparent_0_72%,color-mix(in_srgb,var(--color-primary)_70%,white)_72%_100%),linear-gradient(135deg,transparent_0_55%,color-mix(in_srgb,var(--color-dark-primary)_60%,white)_55%_100%),linear-gradient(135deg,transparent_0_38%,color-mix(in_srgb,var(--color-primary-accent)_60%,white)_38%_55%,transparent_55%)];
+
+        /* @apply bg-[--color-background-light] bg-[linear-gradient(135deg,transparent_0_72%,var(--color-primary)_72%_100%),linear-gradient(135deg,transparent_0_55%,var(--color-dark-primary)_55%_100%),linear-gradient(135deg,transparent_0_38%,var(--color-primary-accent)_38%_55%,transparent_55%)];
+        & p {
+            @apply text-white mix-blend-difference;
+        } */
     }
 
     .bg-theme {
