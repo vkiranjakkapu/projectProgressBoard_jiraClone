@@ -1,5 +1,6 @@
 import {
     ArrowLeftStartOnRectangleIcon,
+    ClipboardDocumentListIcon,
     CogIcon,
     ComputerDesktopIcon,
     MoonIcon,
@@ -9,7 +10,7 @@ import {
     SunIcon,
     UserGroupIcon,
     UserIcon,
-    ViewColumnsIcon
+    ViewColumnsIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import useAuthContext, { RoleType } from "../../context/useAuthContext";
@@ -49,6 +50,12 @@ export default function SidebarComponent({
             page: "My Tasks",
             uri: RoutePaths.MYTASKS,
             icon: QueueListIcon,
+        },
+        {
+            page: "Sprint Planning",
+            uri: RoutePaths.MYTASKS,
+            icon: ClipboardDocumentListIcon,
+            roles: [RoleType.MANAGER],
         },
     ];
 

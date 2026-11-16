@@ -5,6 +5,7 @@ export const RoutePaths = {
     KANBAN: "/kanban",
     MYTASKS: "/mytasks",
 
+    SPRINT: "/sprint",
     PROJECTS: "/projects",
     USERS: "/users",
 

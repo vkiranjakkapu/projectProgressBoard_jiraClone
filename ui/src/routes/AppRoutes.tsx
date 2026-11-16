@@ -9,6 +9,7 @@ import LandingPage from "../pages/landing/LandingPage";
 import MyTasksPage from "../pages/mytasks/MyTasksPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import ProjectsPage from "../pages/projects/ProjectsPage";
+import SprintPlanningPage from "../pages/sprint/SprintPlanningPage";
 import UsersPage from "../pages/users/UsersPage";
 import { RoutePaths } from "./RoutePaths";
 
@@ -36,6 +37,10 @@ export default function AppRoutes() {
                     <Route
                         path={RoutePaths.PROJECTS}
                         element={<ProjectsPage />}
+                    />
+                    <Route
+                        path={RoutePaths.SPRINT}
+                        element={<SprintPlanningPage />}
                     />
                 </Route>
 
