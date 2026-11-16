@@ -7,8 +7,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useState, type ReactNode } from "react";
 import ActionButton from "../ActionButtonComponent";
+import HeaderLogoComponent from "./HeaderLogoComponent";
 import SidebarComponent from "./SidebarComponent";
-import Logo from "/favicon.png";
 
 type DashboardLayoutProps = {
     children: ReactNode;
@@ -72,20 +72,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             ></div>
             <SidebarComponent theme={theme} toggleTheme={toggleTheme} />
             <div className="h-full overflow-y-scroll overflow-x-clip flex-1">
-                <header className="bg-theme lg:hidden p-4 lg:p-5 flex flex-wrap justify-between bg-section-theme shadow-lg">
-                    <div className="pb-4 lg:pb-5 flex items-center gap-2 font-semibold">
-                        <img
-                            src={Logo}
-                            alt="Kanban board Logo"
-                            className="size-14 shadow-lg rounded-xl"
-                        />
-                        <div className="flex flex-col justify-center">
-                            <div className="text-lg">Kanban Board</div>
-                            <span className="text-sm capitalize">
-                                Track your project
-                            </span>
-                        </div>
-                    </div>
+                <header className="bg-theme lg:hidden p-4 lg:p-5 flex flex-wrap justify-between items-center bg-section-theme shadow-lg">
+                    <HeaderLogoComponent textClassName="pr-4" />
                     <div className="flex flex-wrap items-center gap-3">
                         <div className="flex items-center gap-1">
                             <ActionButton
@@ -114,7 +102,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         />
                     </div>
                 </header>
-                <div className="my-1 me-1">{children}</div>
+                <div className="my-1 mx-1 lg:ml-0">{children}</div>
             </div>
         </main>
     );

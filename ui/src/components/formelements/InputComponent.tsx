@@ -8,6 +8,7 @@ export type InputComponentProps = Omit<
     id: string;
     label?: LabelElementProps;
     customise?: string;
+    iconSize?: string;
     children?: ReactNode;
     resultsLabel?: string;
     ref?: Ref<HTMLInputElement>;
@@ -31,7 +32,11 @@ export default function InputComponent({
                             htmlFor={id}
                             className={`space-x-1 ${label.className}`}
                         >
-                            {label.icon && <label.icon className="size-4" />}
+                            {label.icon && (
+                                <label.icon
+                                    className={`size-4 ${label.iconSize}`}
+                                />
+                            )}
                             {label.text && <span>{label.text}</span>}
                         </label>
                     );

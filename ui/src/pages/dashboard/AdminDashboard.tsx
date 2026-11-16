@@ -1,3 +1,5 @@
+import ProgressBoard from "../board/ProgressBoard";
+
 export default function AdminDashboard() {
-    return <h1>Admin Dashboard</h1>;
+    return <ProgressBoard />;
 }

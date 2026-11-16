@@ -2,10 +2,10 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAuthContext from "../context/useAuthContext";
 import { RoutePaths } from "../routes/RoutePaths";
 
-export default function AdminLayout() {
-    const { isAdmin } = useAuthContext();
+export default function NonUsersLayout() {
+    const { isUser } = useAuthContext();
 
-    if (!isAdmin) {
+    if (isUser) {
         return <Navigate to={RoutePaths.DASHBOARD} />;
     }
 

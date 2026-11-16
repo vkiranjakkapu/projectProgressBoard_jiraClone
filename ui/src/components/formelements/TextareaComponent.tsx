@@ -21,7 +21,9 @@ export default function TextareaComponent({
         <div className={`${label ? `form-group` : ``} ${customise ?? ""}`}>
             {label && (
                 <label {...label} htmlFor={id} className="space-x-1">
-                    {label.icon && <label.icon className="size-4" />}
+                    {label.icon && (
+                        <label.icon className={`size-4 ${label.iconSize}`} />
+                    )}
                     {label.text && <span>{label.text}</span>}
                 </label>
             )}

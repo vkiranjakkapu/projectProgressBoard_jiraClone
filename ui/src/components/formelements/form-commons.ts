@@ -3,5 +3,6 @@ import type { IconProps } from "../commons";
 
 export type LabelElementProps = LabelHTMLAttributes<HTMLLabelElement> & {
     icon?: IconProps;
+    iconSize?: string;
     text?: string;
 };
