@@ -1,12 +1,11 @@
 package com.progressboard.identity.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record AddressDto(@NotNull String street,
-		@NotNull String pinCode,
-		@NotNull String state,
-		@NotNull String country) {
+public record AddressDto(String street,
+		String pinCode,
+		String state,
+		String country) {
 
 }

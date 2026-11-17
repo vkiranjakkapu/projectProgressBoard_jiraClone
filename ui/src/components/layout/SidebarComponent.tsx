@@ -50,10 +50,11 @@ export default function SidebarComponent({
             page: "My Tasks",
             uri: RoutePaths.MYTASKS,
             icon: QueueListIcon,
+            roles: [RoleType.MANAGER, RoleType.USER],
         },
         {
             page: "Sprint Planning",
-            uri: RoutePaths.MYTASKS,
+            uri: RoutePaths.SPRINT,
             icon: ClipboardDocumentListIcon,
             roles: [RoleType.MANAGER],
         },
@@ -64,7 +65,7 @@ export default function SidebarComponent({
             page: "Projects",
             uri: RoutePaths.PROJECTS,
             icon: PuzzlePieceIcon,
-            roles: [RoleType.MANAGER, RoleType.ADMIN],
+            roles: [RoleType.MANAGER],
         },
         {
             page: "Users",
@@ -76,7 +77,7 @@ export default function SidebarComponent({
 
     return (
         <aside
-            className={`bg-theme sidebar text-md flex flex-col gap-5 justify-between p-3 fixed z-1000 lg:sticky bg-section-theme shadow-lg h-full min-w-68 duration-150 *:space-y-3`}
+            className={`bg-theme sidebar text-md flex flex-col gap-5 justify-between p-3 fixed z-49 lg:sticky bg-section-theme shadow-lg h-full min-w-68 duration-150 *:space-y-3`}
         >
             <div className="flex-1">
                 <HeaderLogoComponent />

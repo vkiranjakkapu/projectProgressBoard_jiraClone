@@ -30,34 +30,26 @@ export function useNotifications<T extends string>(services: T[]) {
         <K extends T>(
             belongs: K,
             value: SetStateAction<NotificationProps | null>,
-            durationInSecsOrPersist: number | boolean = 5,
+            /** if set to `0`, autoClose will be disabled. */
+            duration: number = 5,
         ) => {
             if (timeouts.current[belongs]) {
                 clearTimeout(timeouts.current[belongs]);
                 delete timeouts.current[belongs];
             }
 
-            const persist =
-                typeof durationInSecsOrPersist === "boolean"
-                    ? durationInSecsOrPersist
-                    : false;
-            const durationInSeconds =
-                typeof durationInSecsOrPersist === "number"
-                    ? durationInSecsOrPersist
-                    : 5;
-
             updateNotifications((prev) => {
                 const resolvedNextValue =
                     typeof value === "function" ? value(prev[belongs]) : value;
 
-                if (resolvedNextValue !== null && !persist) {
+                if (resolvedNextValue !== null && duration !== 0) {
                     timeouts.current[belongs] = setTimeout(() => {
                         updateNotifications((p) => ({
                             ...p,
                             [belongs]: null,
                         }));
                         delete timeouts.current[belongs];
-                    }, durationInSeconds * 1000);
+                    }, duration * 1000);
                 }
 
                 return {

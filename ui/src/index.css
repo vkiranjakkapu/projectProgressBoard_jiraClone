@@ -107,7 +107,7 @@
         @apply px-2 py-1 rounded border border-primary-accent dark:border-dark-accent/30 bg-primary-accent/90 hover:bg-primary-accent text-white outline-primary-accent outline-1 outline-offset-1 cursor-pointer;
 
         &.primary {
-            @apply px-2 py-1 rounded border border-primary dark:border-primary/30 bg-primary/90 hover:bg-primary text-white outline-1 outline-offset-1 outline-primary;
+            @apply px-2 py-1 rounded border border-primary dark:border-primary/30 bg-primary hover:bg-primary/95 text-white outline-1 outline-offset-1 outline-primary;
         }
 
         &.theme-success {

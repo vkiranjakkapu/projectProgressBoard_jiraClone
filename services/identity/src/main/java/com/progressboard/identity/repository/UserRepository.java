@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     List<User> findByIdIn(Collection<UUID> ids);
 
-    List<User> findAllByRolesAndDeletedFalse(Set<Role> roles);
+    List<User> findAllByRolesAndDeletedFalse(Role roles);
 
     List<User> findAllByDeletedFalse();
 

@@ -10,6 +10,9 @@ import type { BadgeProps } from "./BadgeComponent";
 import BadgeComponent from "./BadgeComponent";
 import type { InputComponentProps } from "./formelements/InputComponent";
 import InputComponent from "./formelements/InputComponent";
+import Notification, {
+    type NotificationProps,
+} from "./notifications/Notification";
 import {
     PaginationButtons,
     type PaginationButtonsProps,
@@ -84,6 +87,9 @@ export type TableComponentProps<T> = TableHTMLAttributes<HTMLTableElement> & {
 
     /** Configuration props for pagination controls rendered when `totalPages > 1`. */
     pagination?: PaginationButtonsProps;
+
+    /** Optinoal notification display inside the table component */
+    notifications?: NotificationProps;
 };
 
 /**
@@ -123,7 +129,6 @@ export type HeaderAlias<T> = {
      */
     renderType?: "string" | "badge" | "html";
 };
-
 
 /**
  * Generic and reusable table component.
@@ -216,8 +221,8 @@ export type HeaderAlias<T> = {
  *     ]}
  * />
  * ```
- * 
-* @example
+ *
+ * @example
  * Advanced usage with custom column rendering, badges, and formatting:
  *
  * ```tsx
@@ -268,7 +273,7 @@ export type HeaderAlias<T> = {
  *     ]}
  * />
  * ```
- * 
+ *
  */
 export default function TableComponent<T>({
     title,
@@ -282,10 +287,11 @@ export default function TableComponent<T>({
     search,
     pagination,
     tableClassName,
+    notifications,
     emptyDataMessage,
     ...props
 }: TableComponentProps<T>) {
-    // Infer columns from the row with the maximum number of keys if `columns` prop is not provided
+    /** Infer columns from the row with the maximum number of keys if `columns` prop is not provided */
     const cols =
         body.length != 0
             ? !headers || headers.length == 0
@@ -304,27 +310,31 @@ export default function TableComponent<T>({
 
     return (
         <section
-            className={`rounded divide-y dark:bg-background-dark ${props.className}`}
+            className={`*:p-4 bg-theme rounded divide-y ${props.className}`}
         >
             {/* Header Section: Title, Description, and Top-Right Action Buttons */}
             {(title || description || actionButtons) && (
-                <div className="p-5! flex flex-wrap items-center justify-between">
-                    <div className="space-y-1">
+                <div className="flex flex-wrap items-center justify-between sm:gap-4 md:gap-8">
+                    <div>
                         {(title || description) && (
                             <>
-                                <h1 className="text-lg font-semibold">
+                                <h1 className="text-xl font-semibold">
                                     {title}
                                 </h1>
-                                <p className="text-sm text-current/70">
+                                <p className="text-sm capitalize">
                                     {description}
                                 </p>
                             </>
                         )}
                     </div>
                     {actionButtons && (
-                        <div>
+                        <div className="flex items-center gap-3">
                             {actionButtons.map((btn, idx) => (
-                                <ActionButton key={idx} {...btn} />
+                                <ActionButton
+                                    key={idx}
+                                    {...btn}
+                                    className={`text-sm ${btn.className}`}
+                                />
                             ))}
                         </div>
                     )}
@@ -371,195 +381,218 @@ export default function TableComponent<T>({
                     customize={`my-2 ${spinner.customize}`}
                 />
             ) : (
-                <div className="overflow-x-auto overflow-y-clip ">
-                    {body.length > 0 ? (
-                        <table
-                            {...props}
-                            className={`w-full min-w-max text-left text-sm
+                <div className="p-0!">
+                    {/* Notifications display */}
+                    {notifications && (
+                        <div className="p-2">
+                            <Notification {...notifications} />
+                        </div>
+                    )}
+
+                    {/* Table starts here */}
+                    <div className="container overflow-x-auto overflow-y-clip">
+                        {body.length > 0 ? (
+                            <table
+                                {...props}
+                                className={`w-full min-w-max text-left text-sm
                                 [&_th,td]:px-5 [&_th]:py-3 [&_td]:py-4
                                 ${tableClassName}
                             `}
-                        >
-                            {/* Table Header */}
-                            {!enableHeader && body.length > 0 && (
-                                <thead className="bg-primary/40 text-xs uppercase dark:bg-background-dark-secondary/80 text-current/70">
-                                    <tr>
-                                        {cols.map((column, idx) => (
-                                            <th scope="col" key={"th" + idx}>
-                                                {String(
-                                                    column.alias ?? column.key,
-                                                )}
-                                            </th>
-                                        ))}
-                                        {actionEvents &&
-                                            actionEvents.map((action, idx) => (
+                            >
+                                {/* Table Header */}
+                                {!enableHeader && body.length > 0 && (
+                                    <thead className="bg-primary/40 text-xs uppercase text-current/70">
+                                        <tr>
+                                            {cols.map((column, idx) => (
                                                 <th
-                                                    key={"ae" + idx}
-                                                    className={action.className}
+                                                    scope="col"
+                                                    key={"th" + idx}
                                                 >
-                                                    {action.title}
+                                                    {String(
+                                                        column.alias ??
+                                                            column.key,
+                                                    )}
                                                 </th>
                                             ))}
-                                    </tr>
-                                </thead>
-                            )}
+                                            {actionEvents &&
+                                                actionEvents.map(
+                                                    (action, idx) => (
+                                                        <th
+                                                            key={"ae" + idx}
+                                                            className={
+                                                                action.className
+                                                            }
+                                                        >
+                                                            {action.title}
+                                                        </th>
+                                                    ),
+                                                )}
+                                        </tr>
+                                    </thead>
+                                )}
 
-                            {/* Table Body */}
-                            <tbody
-                                className={`
+                                {/* Table Body */}
+                                <tbody
+                                    className={`
                                 divide-y divide-current/12 transition-colors
                                 *:transition-colors
                             `}
-                            >
-                                {body.map((item, idx) => (
-                                    <tr
-                                        key={"tb" + idx}
-                                        className="group text-current"
-                                    >
-                                        {cols.map((column) => {
-                                            const hasLineClamp =
-                                                column.className?.includes(
-                                                    "line-clamp",
-                                                );
-                                            const value = item[column.key];
-                                            const tdVal = column.renderColumn
-                                                ? column.renderColumn(
-                                                      value,
-                                                      item as T,
-                                                  )
-                                                : value;
-                                            return (
-                                                <td
-                                                    key={String(column.key)}
-                                                    className={`relative overflow-hidden ${column.className}`}
-                                                    {...(() => {
-                                                        if (column.props) {
-                                                            return column.props(
-                                                                column as T,
-                                                            );
-                                                        }
-                                                    })()}
-                                                >
-                                                    {hasLineClamp ? (
-                                                        <>
-                                                            <div
-                                                                className={
-                                                                    column.className
-                                                                }
-                                                            >
-                                                                {String(tdVal)}
-                                                            </div>
-                                                            <div className="absolute inset-x-0 bottom-0 h-5 bg-linear-to-t from-white dark:from-transparent group-hover:from-transparent to-transparent pointer-events-none transition-colors" />
-                                                        </>
-                                                    ) : (
-                                                        (() => {
-                                                            const renderType =
-                                                                column.renderType;
-                                                            if (renderType) {
+                                >
+                                    {body.map((item, idx) => (
+                                        <tr
+                                            key={"tb" + idx}
+                                            className="group text-current"
+                                        >
+                                            {cols.map((column) => {
+                                                const hasLineClamp =
+                                                    column.className?.includes(
+                                                        "line-clamp",
+                                                    );
+                                                const value = item[column.key];
+                                                const tdVal =
+                                                    column.renderColumn
+                                                        ? column.renderColumn(
+                                                              value,
+                                                              item as T,
+                                                          )
+                                                        : value;
+                                                return (
+                                                    <td
+                                                        key={String(column.key)}
+                                                        className={`relative overflow-hidden ${column.className}`}
+                                                        {...(() => {
+                                                            if (column.props) {
+                                                                return column.props(
+                                                                    column as T,
+                                                                );
+                                                            }
+                                                        })()}
+                                                    >
+                                                        {hasLineClamp ? (
+                                                            <>
+                                                                <div
+                                                                    className={
+                                                                        column.className
+                                                                    }
+                                                                >
+                                                                    {String(
+                                                                        tdVal,
+                                                                    )}
+                                                                </div>
+                                                                <div className="absolute inset-x-0 bottom-0 h-5 bg-linear-to-t from-white dark:from-transparent group-hover:from-transparent to-transparent pointer-events-none transition-colors" />
+                                                            </>
+                                                        ) : (
+                                                            (() => {
+                                                                const renderType =
+                                                                    column.renderType;
                                                                 if (
-                                                                    renderType ===
-                                                                    "badge"
+                                                                    renderType
                                                                 ) {
-                                                                    return (
-                                                                        <BadgeComponent
-                                                                            {...(tdVal as BadgeProps)}
-                                                                        />
-                                                                    );
-                                                                } else if (
-                                                                    renderType ===
-                                                                    "html"
-                                                                ) {
-                                                                    return tdVal as ReactNode;
-                                                                }
-                                                            }
-                                                            return String(
-                                                                tdVal,
-                                                            );
-                                                        })()
-                                                    )}
-                                                </td>
-                                            );
-                                        })}
-
-                                        {/* Row-level Action Events */}
-                                        {actionEvents &&
-                                            actionEvents.map(
-                                                (action, actionIdx) => {
-                                                    const clickEvents =
-                                                        action.clickEvents;
-                                                    return (
-                                                        <td
-                                                            key={
-                                                                "act" +
-                                                                actionIdx
-                                                            }
-                                                            className={`flex gap-2 items-center ${action.className}`}
-                                                        >
-                                                            {clickEvents &&
-                                                                clickEvents.map(
-                                                                    (
-                                                                        ev,
-                                                                        idx,
-                                                                    ) => {
-                                                                        return action.useText ? (
-                                                                            <span
-                                                                                key={
-                                                                                    "clickEvent-" +
-                                                                                    idx
-                                                                                }
-                                                                                onClick={() => {
-                                                                                    ev.onClick?.(
-                                                                                        item,
-                                                                                    );
-                                                                                }}
-                                                                                className={`cursor-pointer flex flex-row items-center gap-1 ${ev.className}`}
-                                                                            >
-                                                                                {
-                                                                                    ev.text
-                                                                                }
-                                                                                {ev.icon && (
-                                                                                    <ev.icon
-                                                                                        className={`${ev.text != undefined ? "size-4" : "size-5 mx-auto"}`}
-                                                                                    />
-                                                                                )}
-                                                                            </span>
-                                                                        ) : (
-                                                                            <ActionButton
-                                                                                {...ev}
-                                                                                key={
-                                                                                    "clickEvent-" +
-                                                                                    idx
-                                                                                }
-                                                                                className={`p-2 rounded-lg ${ev.className}`}
-                                                                                onClick={() => {
-                                                                                    ev.onClick?.(
-                                                                                        item,
-                                                                                    );
-                                                                                }}
+                                                                    if (
+                                                                        renderType ===
+                                                                        "badge"
+                                                                    ) {
+                                                                        return (
+                                                                            <BadgeComponent
+                                                                                {...(tdVal as BadgeProps)}
                                                                             />
                                                                         );
-                                                                    },
-                                                                )}
-                                                        </td>
-                                                    );
-                                                },
-                                            )}
-                                    </tr>
-                                ))}
-                                {body.length == 0 && (
-                                    <tr>
-                                        <td className="fullSpan capitalize text-center">
-                                            No Data to display
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p className="text-sm p-5!">
-                            {emptyDataMessage ?? `No Data to display`}
-                        </p>
-                    )}
+                                                                    } else if (
+                                                                        renderType ===
+                                                                        "html"
+                                                                    ) {
+                                                                        return tdVal as ReactNode;
+                                                                    }
+                                                                }
+                                                                return String(
+                                                                    tdVal,
+                                                                );
+                                                            })()
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
+
+                                            {/* Row-level Action Events */}
+                                            {actionEvents &&
+                                                actionEvents.map(
+                                                    (action, actionIdx) => {
+                                                        const clickEvents =
+                                                            action.clickEvents;
+                                                        return (
+                                                            <td
+                                                                key={
+                                                                    "act" +
+                                                                    actionIdx
+                                                                }
+                                                                className={`flex gap-2 items-center ${action.className}`}
+                                                            >
+                                                                {clickEvents &&
+                                                                    clickEvents.map(
+                                                                        (
+                                                                            ev,
+                                                                            idx,
+                                                                        ) => {
+                                                                            return action.useText ? (
+                                                                                <span
+                                                                                    key={
+                                                                                        "clickEvent-" +
+                                                                                        idx
+                                                                                    }
+                                                                                    onClick={() => {
+                                                                                        ev.onClick?.(
+                                                                                            item,
+                                                                                        );
+                                                                                    }}
+                                                                                    className={`cursor-pointer flex flex-row items-center gap-1 ${ev.className}`}
+                                                                                >
+                                                                                    {
+                                                                                        ev.text
+                                                                                    }
+                                                                                    {ev.icon && (
+                                                                                        <ev.icon
+                                                                                            className={`${ev.text != undefined ? "size-4" : "size-5 mx-auto"}`}
+                                                                                        />
+                                                                                    )}
+                                                                                </span>
+                                                                            ) : (
+                                                                                <ActionButton
+                                                                                    {...ev}
+                                                                                    key={
+                                                                                        "clickEvent-" +
+                                                                                        idx
+                                                                                    }
+                                                                                    className={`p-2 rounded-lg ${ev.className}`}
+                                                                                    onClick={() => {
+                                                                                        ev.onClick?.(
+                                                                                            item,
+                                                                                        );
+                                                                                    }}
+                                                                                />
+                                                                            );
+                                                                        },
+                                                                    )}
+                                                            </td>
+                                                        );
+                                                    },
+                                                )}
+                                        </tr>
+                                    ))}
+                                    {body.length == 0 && (
+                                        <tr>
+                                            <td className="fullSpan capitalize text-center">
+                                                No Data to display
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-sm p-5!">
+                                {emptyDataMessage ?? `No Data to display`}
+                            </p>
+                        )}
+                    </div>
                 </div>
             )}
         </section>

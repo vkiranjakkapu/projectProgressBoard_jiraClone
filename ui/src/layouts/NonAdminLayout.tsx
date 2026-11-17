@@ -5,7 +5,7 @@ import { RoutePaths } from "../routes/RoutePaths";
 export default function NonAdminLayout() {
     const { isAdmin } = useAuthContext();
 
-    if (!isAdmin) {
+    if (isAdmin) {
         return <Navigate to={RoutePaths.DASHBOARD} />;
     }
 

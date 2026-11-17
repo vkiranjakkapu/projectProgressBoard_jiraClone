@@ -111,16 +111,19 @@ class UserServiceImplTest {
 	@Test
 	void createUser_ShouldCreateSuccessfully() {
 
-		CreateUserRequestDto request = new CreateUserRequestDto(
-				"john@test.com",
-				"John",
-				"Doe",
-				UserGender.MALE,
-				"password",
-				LocalDate.of(2000, 1, 1),
-				"9999999999",
-				addressDto,
-				RoleType.USER);
+		CreateUserRequestDto request = CreateUserRequestDto.builder()
+				.email("john@test.com")
+				.phone("9999999999")
+				.role(RoleType.USER)
+
+				.firstName("John")
+				.lastName("Doe")
+				.gender(UserGender.MALE)
+
+				.dob(LocalDate.of(2000, 1, 1))
+				.address(addressDto)
+				.password("password")
+				.build();
 
 		Role userRole = new Role();
 		userRole.setName(RoleType.USER);
@@ -153,16 +156,19 @@ class UserServiceImplTest {
 	@Test
 	void createUser_ShouldThrow_WhenEmailAlreadyExists() {
 
-		CreateUserRequestDto request = new CreateUserRequestDto(
-				"john@test.com",
-				"John",
-				"Doe",
-				UserGender.MALE,
-				"password",
-				LocalDate.now(),
-				"9999999999",
-				addressDto,
-				RoleType.USER);
+		CreateUserRequestDto request = CreateUserRequestDto.builder()
+				.email("john@test.com")
+				.phone("9999999999")
+				.role(RoleType.USER)
+
+				.firstName("John")
+				.lastName("Doe")
+				.gender(UserGender.MALE)
+
+				.dob(LocalDate.now())
+				.address(addressDto)
+				.password("password")
+				.build();
 
 		when(authenticationContext.getCurrentUser())
 				.thenReturn(Optional.of(authenticatedUser("ROLE_ADMIN")));
@@ -180,16 +186,19 @@ class UserServiceImplTest {
 	@Test
 	void createUser_ShouldThrow_WhenCurrentUserIsUser() {
 
-		CreateUserRequestDto request = new CreateUserRequestDto(
-				"john@test.com",
-				"John",
-				"Doe",
-				null,
-				"password",
-				LocalDate.now(),
-				"9999999999",
-				addressDto,
-				RoleType.USER);
+		CreateUserRequestDto request = CreateUserRequestDto.builder()
+				.email("john@test.com")
+				.phone("9999999999")
+				.role(RoleType.USER)
+
+				.firstName("John")
+				.lastName("Doe")
+				.gender(null)
+
+				.dob(LocalDate.now())
+				.address(addressDto)
+				.password("password")
+				.build();
 
 		when(authenticationContext.getCurrentUser())
 				.thenReturn(Optional.of(authenticatedUser("ROLE_USER")));
@@ -288,7 +297,6 @@ class UserServiceImplTest {
 		UpdateUserRequest request = new UpdateUserRequest(
 				"Updated",
 				"User",
-				"",
 				"8888888888",
 				UserGender.NON_DISCLOSED,
 				null,
@@ -316,7 +324,6 @@ class UserServiceImplTest {
 		UpdateUserRequest request = new UpdateUserRequest(
 				"Updated",
 				"User",
-				"",
 				"9999999999",
 				UserGender.NON_DISCLOSED,
 				null,
