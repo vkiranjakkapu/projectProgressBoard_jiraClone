@@ -56,8 +56,6 @@ public class User implements UserDetails {
 
     private String lastName;
 
-    private String vehicleNumber;
-
     private String phone;
 
     private LocalDate dob;

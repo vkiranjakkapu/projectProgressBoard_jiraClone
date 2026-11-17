@@ -31,9 +31,10 @@ public class DataInitializer implements CommandLineRunner {
 		Role adminRole = roleRepository.findByName(RoleType.ADMIN)
 				.orElseGet(() -> roleRepository.save(
 						new Role(null, RoleType.ADMIN, "Administrator")));
-		roleRepository.findByName(RoleType.ADMIN)
+
+		roleRepository.findByName(RoleType.MANAGER)
 				.orElseGet(() -> roleRepository.save(
-						new Role(null, RoleType.ADMIN, "Admin")));
+						new Role(null, RoleType.MANAGER, "Manager")));
 		roleRepository.findByName(RoleType.USER)
 				.orElseGet(() -> roleRepository.save(
 						new Role(null, RoleType.USER, "User")));

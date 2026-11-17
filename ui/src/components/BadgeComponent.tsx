@@ -2,6 +2,7 @@ import {
     CheckBadgeIcon,
     ClockIcon,
     ExclamationCircleIcon,
+    InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import type {
     ForwardRefExoticComponent,
@@ -43,23 +44,7 @@ export default function BadgeComponent({
                 {value}
             </span>
         );
-    }
-    if (type === "info") {
-        return (
-            <span
-                className={`capitalize inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 px-2.5 py-1 text-xs font-medium ${customize}`}
-            >
-                {!hideIcon &&
-                    (Icon ? (
-                        <Icon className="size-3.5 text-cyan-500" />
-                    ) : (
-                        <ClockIcon className="size-3.5 text-cyan-500" />
-                    ))}
-                {value}
-            </span>
-        );
-    }
-    if (type === "warning") {
+    } else if (type === "warning") {
         return (
             <span
                 className={`capitalize inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-400 ${customize}`}
@@ -73,8 +58,7 @@ export default function BadgeComponent({
                 {value}
             </span>
         );
-    }
-    if (type === "danger") {
+    } else if (type === "danger") {
         return (
             <span
                 className={`capitalize inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 py-1 text-xs font-medium text-rose-700 dark:text-rose-400 ${customize}`}
@@ -84,6 +68,20 @@ export default function BadgeComponent({
                         <Icon className="size-3.5 text-rose-500" />
                     ) : (
                         <ExclamationCircleIcon className="size-3.5 text-rose-500" />
+                    ))}
+                {value}
+            </span>
+        );
+    } else {
+        return (
+            <span
+                className={`capitalize inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 px-2.5 py-1 text-xs font-medium ${customize}`}
+            >
+                {!hideIcon &&
+                    (Icon ? (
+                        <Icon className="size-3.5 text-cyan-500" />
+                    ) : (
+                        <InformationCircleIcon className="size-3.5 text-cyan-500" />
                     ))}
                 {value}
             </span>

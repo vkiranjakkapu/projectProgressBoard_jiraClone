@@ -70,7 +70,7 @@ export default function ModalComponent({
                         onClick={onClose}
                         icon={XMarkIcon}
                         aria-label="Close modal"
-                        className="p-1 shadow-none"
+                        className="p-1 shadow-none primary"
                     />
                 </div>
 

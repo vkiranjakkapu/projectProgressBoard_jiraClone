@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.platform.security.context.AuthenticationContext;
 import com.platform.security.model.AuthenticatedUser;
 import com.progressboard.identity.dto.CreateUserRequestDto;
@@ -44,13 +43,11 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationContext authenticationContext;
 
-	private ObjectMapper mapper = new ObjectMapper();
-
 	@Override
 	public UserResponse createUser(CreateUserRequestDto request) {
 
 		AuthenticatedUser currentUser = authenticationContext.getCurrentUser().orElse(null);
-		validatePermission(currentUser);
+		validatePermission(currentUser, request.role());
 
 		if (userRepository.existsByEmail(request.email())) {
 			throw new EmailAlreadyUsedException("Email already exists");
@@ -60,32 +57,59 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
 		User user = User.builder()
+				.roles(Set.of(role))
+				.email(request.email())
+				.phone(request.phone())
 				.firstName(request.firstName())
 				.lastName(request.lastName())
-				.email(request.email())
-				.password(passwordEncoder.encode(Optional.ofNullable(request.password()).orElse("password")))
-				.dob(Optional.ofNullable(request.dob()).orElse(null))
-				.phone(request.phone())
 				.gender(request.gender())
-				.address(Address.builder()
-						.street(request.address().street())
-						.pinCode(request.address().pinCode())
-						.state(request.address().state())
-						.country(request.address().country())
-						.build())
-				.enabled(true)
-				.roles(Set.of(role))
 				.build();
+
+		Optional.ofNullable(request.password()).ifPresentOrElse(pass -> {
+			user.setPassword(passwordEncoder.encode(pass));
+		}, () -> {
+			user.setPassword(passwordEncoder.encode("password"));
+		});
+
+		Optional.ofNullable(request.dob()).ifPresent(dob -> {
+			user.setDob(dob);
+		});
+
+		Optional.ofNullable(request.address()).ifPresent(address -> {
+			Address addr = new Address();
+			Optional.ofNullable(address.street()).ifPresent(street -> {
+				addr.setStreet(street);
+			});
+			Optional.ofNullable(address.pinCode()).ifPresent(pinCode -> {
+				addr.setPinCode(pinCode);
+			});
+			Optional.ofNullable(address.state()).ifPresent(state -> {
+				addr.setState(state);
+			});
+			Optional.ofNullable(address.country()).ifPresent(country -> {
+				addr.setCountry(country);
+			});
+			user.setAddress(addr);
+		});
 
 		User saved = userRepository.save(user);
 
 		return mapToResponse(saved, true);
 	}
 
-	private void validatePermission(AuthenticatedUser user) {
-		if (user.getAuthorities().size() == 1
-				&& user.getAuthorities().stream().toList().getFirst().equalsIgnoreCase("ROLE_USER"))
-			throw new ForbiddenException("You are not allowed to create this user.");
+	private void validatePermission(AuthenticatedUser user, RoleType role) {
+		if (user.getAuthorities().size() == 1) {
+			String userRole = user.getAuthorities().stream().toList().getFirst();
+
+			if (userRole.equalsIgnoreCase("ROLE_USER")) {
+				throw new ForbiddenException("You are not allowed to create this user.");
+			}
+
+			if (userRole.equalsIgnoreCase("ROLE_MANAGER") && !role.equals(RoleType.USER)) {
+				throw new ForbiddenException("You are not allowed to create this user.");
+			}
+		}
+
 	}
 
 	@Override
@@ -102,7 +126,7 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponse> getAllUsersByRole(RoleType type) {
 		Role role = roleRepository.findByName(type)
 				.orElseThrow(() -> new ResourceNotFoundException("Role not found: " + type));
-		return userRepository.findAllByRolesAndDeletedFalse(Set.of(role)).stream().map(this::mapToResponse).toList();
+		return userRepository.findAllByRolesAndDeletedFalse(role).stream().map(this::mapToResponse).toList();
 	}
 
 	@Override
@@ -175,12 +199,25 @@ public class UserServiceImpl implements UserService {
 		user.setFirstName(request.firstName());
 		user.setLastName(request.lastName());
 		user.setPhone(request.phone());
-		Address address = Optional.ofNullable(request.address())
-				.map(ad -> mapper.convertValue(ad, Address.class)).orElse(user.getAddress());
-		address.setId(user.getAddress().getId());
-		address.setDeleted(false);
-		user.setAddress(address);
-		user.setDob(request.dob());
+
+		Optional.ofNullable(request.address()).ifPresent(address -> {
+			Address addr = Optional.ofNullable(user.getAddress()).orElse(new Address());
+			Optional.ofNullable(address.street()).ifPresent(street -> {
+				addr.setStreet(street);
+			});
+			Optional.ofNullable(address.pinCode()).ifPresent(pinCode -> {
+				addr.setPinCode(pinCode);
+			});
+			Optional.ofNullable(address.state()).ifPresent(state -> {
+				addr.setState(state);
+			});
+			Optional.ofNullable(address.country()).ifPresent(country -> {
+				addr.setCountry(country);
+			});
+			user.setAddress(addr);
+		});
+
+		user.setDob(Optional.ofNullable(request.dob()).orElse(user.getDob()));
 		user.setGender(request.gender());
 		user.setEnabled(Optional.ofNullable(request.enabled()).orElse(user.isEnabled()));
 
@@ -225,7 +262,6 @@ public class UserServiceImpl implements UserService {
 				.id(user.getId())
 				.firstName(user.getFirstName())
 				.lastName(user.getLastName())
-				.vehicleNumber(user.getVehicleNumber())
 				.email(user.getEmail())
 				.phone(user.getPhone())
 				.gender(user.getGender())
@@ -247,7 +283,6 @@ public class UserServiceImpl implements UserService {
 				.id(user.getId())
 				.firstName(user.getFirstName())
 				.lastName(user.getLastName())
-				.vehicleNumber(user.getVehicleNumber())
 				.email(user.getEmail())
 				.phone(user.getPhone())
 				.gender(user.getGender())

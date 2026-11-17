@@ -147,16 +147,9 @@ class UserControllerTest {
 	@Test
 	void createUser_InvalidRequest_ShouldReturn400() throws Exception {
 
-		CreateUserRequestDto request = new CreateUserRequestDto(
-				"invalid-email",
-				"",
-				"",
-				UserGender.MALE,
-				"",
-				null,
-				"",
-				null,
-				null);
+		CreateUserRequestDto request = CreateUserRequestDto.builder()
+				.email("invalid-email")
+				.build();
 
 		mockMvc.perform(post("/identity/api/v1/users/")
 				.with(adminJwt())
@@ -188,7 +181,6 @@ class UserControllerTest {
 				"",
 				"",
 				"",
-				"",
 				UserGender.NON_DISCLOSED,
 				null,
 				null,
@@ -204,27 +196,29 @@ class UserControllerTest {
 
 	private CreateUserRequestDto createRequest() {
 
-		return new CreateUserRequestDto(
-				"john@test.com",
-				"John",
-				"Doe",
-				UserGender.MALE,
-				"password",
-				LocalDate.of(2000, 1, 1),
-				"9999999999",
-				new AddressDto(
+		return CreateUserRequestDto.builder()
+				.email("john@test.com")
+				.phone("9999999999")
+				.role(RoleType.ADMIN)
+
+				.firstName("John")
+				.lastName("Doe")
+				.gender(UserGender.MALE)
+
+				.dob(LocalDate.of(2000, 1, 1))
+				.address(new AddressDto(
 						"Street",
 						"534237",
 						"AP",
-						"India"),
-				RoleType.ADMIN);
+						"India"))
+				.password("password")
+				.build();
 	}
 
 	private UpdateUserRequest updateRequest() {
 		return new UpdateUserRequest(
 				"John",
 				"Doe",
-				"AB01CD2345",
 				"8888888888",
 				UserGender.NON_DISCLOSED,
 				LocalDate.of(2001, 3, 1),
@@ -241,10 +235,9 @@ class UserControllerTest {
 
 		return new UserResponse(
 				UUID.fromString("c0186249-9fc1-4927-97b3-a08a21febfe3"),
-				"john@test.com",
 				"John",
-				"",
 				"Doe",
+				"john@test.com",
 				"9999999999",
 				UserGender.NON_DISCLOSED,
 				null,

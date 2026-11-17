@@ -74,7 +74,7 @@ public class UserController {
 			@ApiResponse(responseCode = "409", description = "User already exists", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@PostMapping("/")
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public ResponseEntity<APIResponseDto<UserResponse>> createUser(
 			@Valid @RequestBody CreateUserRequestDto request) {
 
@@ -100,7 +100,7 @@ public class UserController {
 			@ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@GetMapping("/")
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public ResponseEntity<APIResponseDto<List<UserResponse>>> getAllUsers() {
 		return ResponseEntity.ok(APIResponseDto.<List<UserResponse>>builder().data(userService.getAllUsers()).build());
 	}
@@ -112,8 +112,8 @@ public class UserController {
 			@ApiResponse(responseCode = "401", description = "Authentication required", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
 			@ApiResponse(responseCode = "403", description = "Insufficient permissions", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	@GetMapping("/role/{role}")
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@GetMapping("/role/{type}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public ResponseEntity<APIResponseDto<List<UserResponse>>> getAllUsersByRole(@PathVariable RoleType type) {
 		return ResponseEntity
 				.ok(APIResponseDto.<List<UserResponse>>builder().data(userService.getAllUsersByRole(type)).build());
@@ -127,7 +127,7 @@ public class UserController {
 			@ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public ResponseEntity<APIResponseDto<UserResponse>> getUserById(@PathVariable UUID id) {
 		return ResponseEntity.ok(APIResponseDto.<UserResponse>builder().data(userService.getUserById(id)).build());
 	}
@@ -187,7 +187,7 @@ public class UserController {
 			@ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 	public ResponseEntity<APIResponseDto<HashMap<String, Boolean>>> deleteUser(@PathVariable UUID id) {
 
 		userService.deleteUser(id);
